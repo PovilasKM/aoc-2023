@@ -1,5 +1,3 @@
-from functools import reduce
-
 lines = [x for x in open('data.txt', "r").read().split("\n") if x]
 time = int(lines[0].split(':')[1].replace(' ', ''))
 distance = int(lines[1].split(':')[1].replace(' ', ''))
