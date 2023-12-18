@@ -84,9 +84,9 @@ def strongest_power_hand(hand):
         return power_hand(hand)
     biggest = power_hand(hand)
     for key in powers.keys():
-        power_with_replaced_J = power_hand(hand.replace('J', key))
-        if power_with_replaced_J > biggest:
-            biggest = power_with_replaced_J
+        power_with_replaced_j = power_hand(hand.replace('J', key))
+        if power_with_replaced_j > biggest:
+            biggest = power_with_replaced_j
     return biggest
 
 
