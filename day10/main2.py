@@ -19,40 +19,52 @@ for y, line in enumerate(lines):
     for x, symbol in enumerate(line):
         if symbol[0] == 'S':
             starting_tile = (x, y)
+            lines[y][x][1] = -1
 
-next_steps_coords = []
-# find the initial starting tiles around S
+next_step_coord = ()
+# select the first tile after starting tile
 # up
 if lines[starting_tile[1] - 1][starting_tile[0]][0] in '|7F':
-    next_steps_coords.append((starting_tile[0], starting_tile[1] - 1))
+    next_step_coord = (starting_tile[0], starting_tile[1] - 1)
 # down
-if lines[starting_tile[1] + 1][starting_tile[0]][0] in '|LJ':
-    next_steps_coords.append((starting_tile[0], starting_tile[1] + 1))
+elif lines[starting_tile[1] + 1][starting_tile[0]][0] in '|LJ':
+    next_step_coord = (starting_tile[0], starting_tile[1] + 1)
 # left
-if lines[starting_tile[1]][starting_tile[0] - 1][0] in '-LF':
-    next_steps_coords.append((starting_tile[0] - 1, starting_tile[1]))
+elif lines[starting_tile[1]][starting_tile[0] - 1][0] in '-LF':
+    next_step_coord = (starting_tile[0] - 1, starting_tile[1])
 # right
-if lines[starting_tile[1]][starting_tile[0] + 1][0] in '-J7':
-    next_steps_coords.append((starting_tile[0] + 1, starting_tile[1]))
-
+elif lines[starting_tile[1]][starting_tile[0] + 1][0] in '-J7':
+    next_step_coord = (starting_tile[0] + 1, starting_tile[1])
 
 # do the thing
-step = 0
-while len(next_steps_coords) > 0:
-    new_coords = []
-    step += 1
-    for next_step_coord in next_steps_coords:
-        next_step = lines[next_step_coord[1]][next_step_coord[0]]
-        if next_step[1] != 0 or next_step[0] == '.' or next_step[0] == 'S':
+steps = [starting_tile]
+while True:
+    # mark tile as passed
+    lines[next_step_coord[1]][next_step_coord[0]][1] = -1
+    next_step_symbol = lines[next_step_coord[1]][next_step_coord[0]][0]
+    steps.append((next_step_coord[0], next_step_coord[1]))
+
+    new_directions = directions[next_step_symbol]
+    should_brake = True
+    for new_direction in new_directions:
+        next_tile = lines[next_step_coord[1] + new_direction[1]][next_step_coord[0] + new_direction[0]]
+        if next_tile[1] == -1 or next_tile[0] == '.':
             continue
+        next_step_coord = (next_step_coord[0] + new_direction[0], next_step_coord[1] + new_direction[1])
+        should_brake = False
+        break
+    if should_brake:
+        break
 
-        new_directions = directions[next_step[0]]
-        lines[next_step_coord[1]][next_step_coord[0]][1] = step
-        for new_direction in new_directions:
-            new_coords.append((next_step_coord[0] + new_direction[0], next_step_coord[1] + new_direction[1]))
-
-    next_steps_coords = new_coords
-
-# paieska gilyn surasti visus taskus ir ju skaiciu
+step_count = len(steps)
 # https://en.wikipedia.org/wiki/Shoelace_formula surask plota
+area = 0
+steps.append(steps[0])
+for i in range(0, len(steps) - 1):
+    area += (steps[i][1] + steps[i + 1][1]) * (steps[i][0] - steps[i + 1][0]) * 0.5
+
+area = abs(area)
 # https://en.wikipedia.org/wiki/Pick%27s_theorem pagal plota ir taskus surask vidinius taskus
+number_of_inner_points = area + 1 - (step_count / 2)
+print(number_of_inner_points)
+
